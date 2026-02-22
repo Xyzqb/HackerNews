@@ -1,0 +1,31 @@
+/* You can add global styles to this file, and also import other style files */
+/* ── Global Reset & Body ───────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #060810;
+  color: #e6eeff;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: #060810; }
+::-webkit-scrollbar-thumb { background: #24304d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #334466; }
+
+/* ── Focus Outline ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgba(91,141,238,.6);
+  outline-offset: 2px;
+}

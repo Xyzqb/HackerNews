@@ -1,0 +1,290 @@
+<div class="hn-root">
+
+  <!-- ══ HEADER ══════════════════════════════════════════════ -->
+  <header class="hn-header" role="banner">
+
+    <div class="hn-header-left">
+
+      <!-- Logo badge -->
+      <div class="hn-badge" aria-label="Hacker News">
+        <span class="badge-text">HN</span>
+      </div>
+
+      <!-- Brand -->
+      <div class="hn-brand">
+        <span class="hn-brand-name">Hacker News</span>
+        <span class="hn-brand-tag">Live Feed</span>
+      </div>
+
+      <!-- Separator -->
+      <div class="hn-divider" aria-hidden="true"></div>
+
+      <!-- Live pill -->
+      <div class="hn-status-pill">
+        <span class="hn-live-dot" aria-hidden="true"></span>
+        <span>Newest</span>
+      </div>
+
+    </div>
+
+    <div class="hn-header-right">
+
+      <!-- Story count chip -->
+      <div class="hn-count-chip"
+           *ngIf="!loading && total > 0"
+           aria-live="polite">
+        <span class="chip-label">Stories</span>
+        <span class="chip-value">{{ total | number }}</span>
+      </div>
+
+      <!-- ✅ FIXED: Search with proper SVG icon sizing -->
+      <div class="hn-search-wrap">
+
+        <!-- Search icon: strictly 16×16, no overflow -->
+        <span class="hn-search-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none"
+               xmlns="http://www.w3.org/2000/svg"
+               width="16" height="16"
+               style="display:block;width:16px;height:16px;flex-shrink:0;">
+            <circle cx="9" cy="9" r="5.5"
+                    stroke="currentColor" stroke-width="1.6"/>
+            <path d="M13.5 13.5L17 17"
+                  stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round"/>
+          </svg>
+        </span>
+
+        <input
+          class="hn-search"
+          type="text"
+          placeholder="Search stories…"
+          [(ngModel)]="search"
+          (input)="onSearchInput()"
+          aria-label="Search Hacker News stories"
+          autocomplete="off"
+          spellcheck="false"
+        />
+
+        <button
+          *ngIf="search"
+          class="hn-search-clear"
+          (click)="clearSearch()"
+          aria-label="Clear search"
+          type="button"
+        >
+          <svg viewBox="0 0 14 14" fill="none"
+               xmlns="http://www.w3.org/2000/svg"
+               width="10" height="10"
+               style="display:block;width:10px;height:10px;">
+            <path d="M1 1l12 12M13 1L1 13"
+                  stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round"/>
+          </svg>
+        </button>
+
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ══ MAIN ════════════════════════════════════════════════ -->
+  <main class="hn-layout" role="main">
+
+    <!-- Toolbar row -->
+    <div class="hn-toolbar">
+      <div class="hn-toolbar-left">
+
+        <h1 class="hn-toolbar-title">
+          <ng-container *ngIf="search; else defaultTitle">
+            Results for &ldquo;<em>{{ search }}</em>&rdquo;
+          </ng-container>
+          <ng-template #defaultTitle>Latest Stories</ng-template>
+        </h1>
+
+        <p class="hn-toolbar-sub">
+          <ng-container *ngIf="loading">
+            Fetching from API&hellip;
+          </ng-container>
+          <ng-container *ngIf="!loading && total > 0">
+            Showing&nbsp;
+            <span class="hi">{{ pageStart }}–{{ pageEnd }}</span>
+            &nbsp;of&nbsp;
+            <span class="hi">{{ total | number }}</span>
+            &nbsp;stories
+          </ng-container>
+          <ng-container *ngIf="!loading && total === 0 && !error">
+            Hacker News · Technology &amp; Startup Feed
+          </ng-container>
+        </p>
+
+      </div>
+
+      <!-- Page badge -->
+      <div class="hn-page-badge"
+           *ngIf="!loading && totalPages > 1"
+           [attr.aria-label]="'Page ' + page + ' of ' + totalPages">
+        <span class="pg-current">{{ page }}</span>
+        <span class="pg-sep">/</span>
+        <span class="pg-total">{{ totalPages }}</span>
+      </div>
+    </div>
+
+
+    <!-- ── ERROR ───────────────────────────────────────────── -->
+    <div class="hn-error" *ngIf="error && !loading" role="alert">
+      <span class="error-icon">
+        <svg viewBox="0 0 20 20" fill="none" width="16" height="16"
+             style="display:block;width:16px;height:16px;">
+          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 6v4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="10" cy="14" r=".9" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="error-msg">{{ error }}</span>
+      <button class="error-retry" (click)="loadStories()" type="button">Retry</button>
+    </div>
+
+
+    <!-- ── SKELETON LOADER ────────────────────────────────── -->
+    <ul class="hn-skeleton-list"
+        *ngIf="loading"
+        aria-label="Loading stories"
+        aria-busy="true">
+      <li class="hn-sk-item"
+          *ngFor="let _ of skeletonItems; let i = index"
+          [style.animation-delay]="(i * 55) + 'ms'">
+        <div class="sk-num"></div>
+        <div class="sk-body">
+          <div class="sk-line sk-title" [style.width.%]="55 + (i % 5) * 8"></div>
+          <div class="sk-line sk-sub"   [style.width.%]="20 + (i % 4) * 6"></div>
+        </div>
+      </li>
+    </ul>
+
+
+    <!-- ── STORY LIST ─────────────────────────────────────── -->
+    <ul class="hn-list"
+        *ngIf="!loading && stories.length > 0"
+        aria-label="Hacker News stories">
+
+      <li class="hn-item"
+          *ngFor="let story of stories; let i = index; trackBy: trackByStory"
+          [style.animation-delay]="(i * 45) + 'ms'">
+
+        <!-- Index number -->
+        <div class="hn-item-index" aria-hidden="true">{{ pageStart + i }}</div>
+
+        <!-- Body -->
+        <div class="hn-item-body">
+
+          <!-- Title -->
+          <a *ngIf="story.url; else plainTitle"
+             [href]="story.url"
+             target="_blank"
+             rel="noreferrer noopener"
+             class="hn-item-title"
+             [title]="story.title">{{ story.title }}</a>
+
+          <ng-template #plainTitle>
+            <span class="hn-item-title hn-item-title--plain">{{ story.title }}</span>
+          </ng-template>
+
+          <!-- Meta row -->
+          <div class="hn-item-meta">
+
+            <!-- Read button -->
+            <a *ngIf="story.url; else noLink"
+               [href]="story.url"
+               target="_blank"
+               rel="noreferrer noopener"
+               class="hn-read-btn"
+               [attr.aria-label]="'Read: ' + story.title">
+              <svg viewBox="0 0 12 12" fill="none" width="10" height="10"
+                   style="display:block;width:10px;height:10px;flex-shrink:0;">
+                <path d="M2 10L10 2M10 2H4M10 2v6"
+                      stroke="currentColor" stroke-width="1.6"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ getHostname(story.url) || 'Read Article' }}
+            </a>
+
+            <ng-template #noLink>
+              <span class="hn-no-link">— No source</span>
+            </ng-template>
+
+            <!-- Story ID -->
+            <span class="hn-item-id" [attr.aria-label]="'ID ' + story.id">#{{ story.id }}</span>
+
+          </div>
+        </div>
+      </li>
+
+    </ul>
+
+
+    <!-- ── EMPTY STATE ────────────────────────────────────── -->
+    <div class="hn-empty"
+         *ngIf="!loading && stories.length === 0 && !error"
+         role="status">
+      <div class="empty-icon-wrap" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" width="32" height="32"
+             style="display:block;width:32px;height:32px;">
+          <circle cx="22" cy="22" r="14" stroke="currentColor" stroke-width="2"/>
+          <path d="M32 32l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M17 22h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="empty-title">No Results Found</p>
+      <p class="empty-sub">
+        <ng-container *ngIf="search">
+          No stories matched &ldquo;{{ search }}&rdquo;.<br>Try a different keyword.
+        </ng-container>
+        <ng-container *ngIf="!search">
+          No stories available right now. Try refreshing.
+        </ng-container>
+      </p>
+    </div>
+
+
+    <!-- ── PAGINATION ─────────────────────────────────────── -->
+    <nav class="hn-pagination"
+         *ngIf="!loading && stories.length > 0"
+         aria-label="Story pagination">
+
+      <!-- Prev -->
+      <button class="hn-page-btn"
+              [disabled]="isFirstPage"
+              (click)="prevPage()"
+              aria-label="Previous page"
+              type="button">
+        &larr; Prev
+      </button>
+
+      <!-- Page numbers -->
+      <div class="hn-page-info" aria-live="polite">
+        <span class="hn-page-nums">{{ page }} / {{ totalPages }}</span>
+        <span class="hn-page-label">Page</span>
+      </div>
+
+      <!-- Next -->
+      <button class="hn-page-btn"
+              [disabled]="isLastPage"
+              (click)="nextPage()"
+              aria-label="Next page"
+              type="button">
+        Next &rarr;
+      </button>
+
+    </nav>
+
+  </main>
+
+
+  <!-- ══ FOOTER ══════════════════════════════════════════════ -->
+  <footer class="hn-footer" role="contentinfo">
+    <p class="footer-line">Powered by Hacker News Official API</p>
+    <p class="footer-api">news.ycombinator.com · real-time feed</p>
+  </footer>
+
+</div>
