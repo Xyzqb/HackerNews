@@ -223,6 +223,51 @@
 .hn-search-clear:hover { background: var(--red); color: #fff; }
 .hn-search-clear svg { width: 10px !important; height: 10px !important; display: block; }
 
+/* Sort Dropdown */
+.hn-sort-wrap {
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+
+.hn-sort-label {
+  color: var(--text-mid); font-size: 12px; font-weight: 600;
+  white-space: nowrap; font-family: var(--f-body);
+}
+
+.hn-sort-select {
+  height: 38px; min-width: 130px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-md);
+  color: var(--text-hi);
+  font-family: var(--f-body); font-size: 12px; font-weight: 500;
+  padding: 0 12px; padding-right: 30px;
+  outline: none; cursor: pointer;
+  transition: border-color var(--t), background var(--t), box-shadow var(--t);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235a7aaa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.hn-sort-select:hover {
+  border-color: var(--border-hi);
+  background-color: var(--bg-hover);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23eef2ff' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+}
+
+.hn-sort-select:focus {
+  border-color: var(--accent-hi);
+  background-color: var(--bg-hover);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237eaaff' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+}
+
+.hn-sort-select option {
+  background: var(--bg-card);
+  color: var(--text-hi);
+}
+
 /* ══════════════════════════════════════════════════════ LAYOUT */
 .hn-layout { max-width: 960px; margin: 0 auto; padding: 40px 28px 96px; }
 
@@ -497,6 +542,7 @@ a.hn-item-title:hover { color: var(--accent-hi); }
   .hn-brand-tag, .hn-status-pill, .hn-divider, .hn-count-chip { display: none; }
   .hn-header-right { width: 100%; }
   .hn-search-wrap  { width: 100%; }
+  .hn-sort-wrap { width: 100%; justify-content: flex-start; }
   .hn-layout { padding: 24px 16px 80px; }
   .hn-item { grid-template-columns: 36px 1fr; gap: 0 12px; padding: 16px 8px 16px 0; }
   .hn-item-title   { font-size: 15px; }

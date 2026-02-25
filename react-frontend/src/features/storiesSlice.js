@@ -5,10 +5,10 @@ const API_URL = "http://localhost:5000/api/stories";
 // ✅ Async Thunk
 export const fetchStories = createAsyncThunk(
   "stories/fetchStories",
-  async ({ page, search }, { rejectWithValue }) => {
+  async ({ page, search, sort }, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `${API_URL}?page=${page}&limit=10&search=${search}`
+        `${API_URL}?page=${page}&limit=10&search=${search}&sort=${sort}`
       );
 
       if (!response.ok) {
@@ -29,12 +29,16 @@ const storiesSlice = createSlice({
     items: [],
     total: 0,
     page: 1,
+    sort: "latest",
     loading: false,
     error: null,
   },
   reducers: {
     setPage: (state, action) => {
       state.page = action.payload;
+    },
+    setSort: (state, action) => {
+      state.sort = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -57,7 +61,7 @@ const storiesSlice = createSlice({
 });
 
 // ✅ Named export
-export const { setPage } = storiesSlice.actions;
+export const { setPage, setSort } = storiesSlice.actions;
 
 // ✅ Default export
 export default storiesSlice.reducer;

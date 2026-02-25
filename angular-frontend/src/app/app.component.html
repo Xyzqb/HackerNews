@@ -84,6 +84,20 @@
 
       </div>
 
+      <!-- Sort Dropdown -->
+      <div class="hn-sort-wrap">
+        <label for="sort-select" class="hn-sort-label">Sort:</label>
+        <select
+          id="sort-select"
+          class="hn-sort-select"
+          [(ngModel)]="sort"
+          (change)="onSortChange(sort)"
+          aria-label="Sort stories">
+          <option value="latest">Latest</option>
+          <option value="oldest">Oldest</option>
+        </select>
+      </div>
+
     </div>
   </header>
 

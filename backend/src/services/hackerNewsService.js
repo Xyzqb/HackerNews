@@ -8,7 +8,8 @@ class HackerNewsService {
         { timeout: 10000 }
       );
 
-      const ids = (idsRes.data || []).slice(0, 100);
+      // Fetch up to 300 stories for better pagination support
+      const ids = (idsRes.data || []).slice(0, 300);
 
       const promises = ids.map((id) =>
         axios.get(`https://hacker-news.firebaseio.com/v0/item/${id}.json`, { timeout: 10000 })

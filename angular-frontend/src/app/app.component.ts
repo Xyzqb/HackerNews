@@ -41,6 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
   page      = 1;
   pageSize  = 10;
   search    = '';
+  sort      = 'latest';
   loading   = false;
   error:    string | null = null;
 
@@ -82,7 +83,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error   = null;
 
-    const params = `page=${this.page}&search=${encodeURIComponent(this.search)}`;
+    const params = `page=${this.page}&search=${encodeURIComponent(this.search)}&sort=${this.sort}`;
 
     this.http
       .get<ApiResponse>(`${this.API}?${params}`)
@@ -111,6 +112,13 @@ export class AppComponent implements OnInit, OnDestroy {
   clearSearch(): void {
     this.search = '';
     this.page   = 1;
+    this.loadStories();
+  }
+
+  /** Sort change handler */
+  onSortChange(newSort: string): void {
+    this.sort = newSort;
+    this.page = 1;
     this.loadStories();
   }
 

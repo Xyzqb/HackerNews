@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchStories, setPage } from "./features/storiesSlice";
+import { fetchStories, setPage, setSort } from "./features/storiesSlice";
 import "./index.css";
 
 /* ─── App ──────────────────────────────────────────────────────────────── */
 
 export default function App() {
   const dispatch = useDispatch();
-  const { items, total, page, loading, error } = useSelector(
+  const { items, total, page, sort, loading, error } = useSelector(
     (state) => state.stories
   );
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    dispatch(fetchStories({ page, search }));
-  }, [dispatch, page, search]);
+    dispatch(fetchStories({ page, search, sort }));
+  }, [dispatch, page, search, sort]);
 
   const totalPages = Math.ceil(total / 10) || 1;
   const pageStart  = (page - 1) * 10 + 1;
@@ -66,6 +66,23 @@ export default function App() {
               ×
             </button>
           )}
+        </div>
+
+        {/* Sort Dropdown */}
+        <div className="hn-sort-wrap">
+          <label htmlFor="sort-select" className="hn-sort-label">
+            Sort:
+          </label>
+          <select
+            id="sort-select"
+            className="hn-sort-select"
+            value={sort}
+            onChange={(e) => dispatch(setSort(e.target.value))}
+            aria-label="Sort stories"
+          >
+            <option value="latest">Latest</option>
+            <option value="oldest">Oldest</option>
+          </select>
         </div>
 
       </header>
