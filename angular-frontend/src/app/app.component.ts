@@ -21,8 +21,12 @@ export interface Story {
 }
 
 export interface ApiResponse {
-  data:  Story[];
-  total: number;
+  data:       Story[];
+  total:      number;
+  page?:      number;
+  totalPages?: number;
+  limit?:     number;
+  message?:   string;
 }
 
 /* ── Component ──────────────────────────────────────────────── */
@@ -95,6 +99,7 @@ export class AppComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.stories = res.data  ?? [];
           this.total   = res.total ?? 0;
+          console.log(`✅ Backend Pagination - Page ${res.page}/${res.totalPages}: ${res.message}`);
         },
         error: (err) => {
           this.error   = err?.error?.message ?? err?.message ?? 'Failed to fetch stories.';
